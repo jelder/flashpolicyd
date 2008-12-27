@@ -1,0 +1,15 @@
+Working on MacOS, Linux and OpenBSD. It currently runs in production on the latter, but I expect it to work anywhere you have a modern Perl.
+
+=== Setup for OpenBSD ===
+
+Add this to your pf.conf:
+
+table <flashpolicy> const { self }
+rdr pass proto tcp from any to <flashpolicy> \
+    port 843 -> \
+    127.0.0.1 port 843
+
+This will redirect any Flash policy request to a daemon on 843. You can start the daemon from rc.local, but I prefer to have an angel process. My root crontab includes a line like this:
+
+*   *   *   *   *   nc localhost 843 < /dev/null | grep -q xml || /usr/local/sbin/flashpolicyd
+
