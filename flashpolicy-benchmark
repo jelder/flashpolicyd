@@ -56,4 +56,3 @@ for my $time (@times) {
     sleep 1
 }
 
-# $Id$
