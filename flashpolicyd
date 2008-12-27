@@ -20,7 +20,7 @@ sub help () {
     print <<END;
 Serves Flash socket policy requests using a quick select() interface.
 
-    --file      File containing answer to polcicy requests.
+    --file      File containing answer to policy requests.
     --port      TCP port, default is $port.
     --timeout   Timeout, default is $timeout.
     --debug     Be verbose and don't daemonize.

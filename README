@@ -1,6 +1,6 @@
 Serves Flash socket policy requests using a quick select() interface.
 
-    --file      File containing answer to polcicy requests.
+    --file      File containing answer to policy requests.
     --port      TCP port, default is 843.
     --timeout   Timeout, default is 3.
     --debug     Be verbose and don't daemonize.
