@@ -1,0 +1,100 @@
+#!/usr/bin/perl
+# Standalone Flash policy server
+# Jacob Elder <jacob.elder@gmail.com>
+# Released under the terms of the GPL.
+use strict;
+use warnings;
+
+use IO::Select;
+use IO::Socket;
+use Getopt::Long;
+use English '-no_match_vars';
+
+# file and port are optional on the command line.
+my $file = '';
+my $port = 843;
+my $debug = 0;
+
+sub help () {
+    print <<END;
+Serves Flash socket policy requests using a quick select() interface.
+
+    --file      File containing answer to polcicy requests.
+    --port      TCP port, default is $port.
+    --debug     Be verbose and don't daemonize.
+
+If no arguments are specified, a ridiculously permissive policy file is served on port 843.
+END
+    exit 75;
+}
+
+GetOptions(
+    'f|file=s' => \$file,
+    'p|port=s' => \$port,
+    'd|debug!' => \$debug,
+) or help;
+
+# $data will be from --file or the default after __END__
+my $data = '';
+if ($file) {
+    open FILE, $file or die "$file:$!";
+    $data .= $_ while (<FILE>);
+    close FILE;
+} else {
+    $data .= $_ while (<DATA>);
+}
+
+my $listen = new IO::Socket::INET(
+    Listen => 1,
+    LocalPort => $port,
+    ReuseAddr => 1,
+    ReusePort => 1
+) or die $!;
+
+# Drop privileges.
+$EFFECTIVE_USER_ID = getpwnam('nobody') unless $UID;
+
+printf("Listening on %s:%s\n",
+    $listen->sockhost(),
+    $listen->sockport())
+    if $debug;
+
+my $select = new IO::Select( $listen )
+    or die $!;
+
+# Daemonize
+unless ($debug) {
+    exit if fork
+}
+
+# Adobe's "protocol" says requests are null-terminated. Only <policy-file-request/> has been used so far, so assume that's all we'll ever see.
+local $INPUT_RECORD_SEPARATOR = pack 'c', 0;
+
+while (my @ready = $select->can_read) {
+    for my $fh (@ready) {
+        if ($fh == $listen) {
+            $select->add($listen->accept);
+        } else {
+            printf("%s:%s -> %s:%s\n",
+                $fh->peerhost(),
+                $fh->peerport(),
+                $fh->sockhost(),
+                $fh->sockport())
+                if $debug;
+            $fh->getline; # Don't need it, but wait for it anyway.
+            $fh->print($data);
+            $select->remove($fh);
+            $fh->close;
+        }
+    }
+}
+
+# $Id: flashpolicyd 1908 2008-12-11 04:45:49Z jelder $
+__END__
+<?xml version="1.0" encoding="UTF-8"?> 
+<cross-domain-policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:noNamespaceSchemaLocation="http://www.adobe.com/xml/schemas/PolicyFileSocket.xsd"> 
+   <site-control permitted-cross-domain-policies="all"/> 
+   <allow-access-from domain="*" to-ports="*"/> 
+</cross-domain-policy> 
+

@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+# Hammer on a Flash policy server
+# Jacob Elder <jacob.elder@gmail.com>
+# Released under the terms of the GPL.
+use strict;
+use warnings;
+use IO::Socket::INET;
+use Getopt::Long;
+
+my $host = '127.0.0.1';
+my $port = 843;
+my $debug = 0;
+
+sub help () {
+    print <<END;
+Flash policy server benchmark tool
+
+    --host      Host, default is $host. 
+    --port      TCP port, default is $port.
+
+END
+    exit 75;
+}
+
+GetOptions(
+    'h|host=s' => \$host,
+    'p|port=s' => \$port,
+) or help;
+
+$|=1;
+my @times = ( 1, 30, 60, 60*2, 60*5, 60*10 );
+for my $time (@times) {
+    eval {
+        my $count = 0;
+        my $stop = 0;
+        $SIG{ALRM} = sub {
+            $stop = 1;
+            printf " Done.\n%f rps\n", $count/$time;
+            die "alarm\n";
+        };
+        alarm $time;
+        printf 'Trying %ss ', $time;
+        while (1) {
+            my $sock = IO::Socket::INET->new("$host:$port")
+                or die $!;
+            $sock->send(sprintf("<policy-file-request/>%c",0)) or die $!;
+            my $answer = $sock->getline or die $!;
+            die 'bad result' unless (defined($answer) && $answer =~ /xml/);
+            $sock->close;
+            $count++;
+            print "." if $count % 1000 == 1;
+            last if $stop;
+        }
+    };
+    die "\n$@" if $@ ne "alarm\n";
+    sleep 1
+}
+
+# $Id$
