@@ -13,3 +13,22 @@ This will redirect any Flash policy request to a daemon on 843. You can start th
 
 *   *   *   *   *   nc localhost 843 < /dev/null | grep -q xml || /usr/local/sbin/flashpolicyd
 
+=== Benchmarking ===
+
+The included benchmark script will punish your server for you. These numbers are my MacBook Pro running 10.5.6.
+
+jake@jeldermbp:~/flashpolicyd$ ./flashpolicyd --port 10843
+jake@jeldermbp:~/flashpolicyd$ ./flashpolicy-benchmark --port 10843
+Trying 1s .. Done.
+1704.000000 rps
+Trying 30s ............... Done.
+489.333333 rps
+Trying 60s ................................. Done.
+545.783333 rps
+Trying 120s ............................................................. Done.
+502.950000 rps
+Trying 300s ......................................................................................................................................................... Done.
+508.460000 rps
+Trying 600s .................................................................................................................................................................................................................................................................................................................................. Done.
+535.096667 rps
+
