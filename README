@@ -1,3 +1,12 @@
+Serves Flash socket policy requests using a quick select() interface.
+
+    --file      File containing answer to polcicy requests.
+    --port      TCP port, default is 843.
+    --timeout   Timeout, default is 3.
+    --debug     Be verbose and don't daemonize.
+
+If no arguments are specified, a ridiculously permissive policy file is served on port 843.
+
 Working on MacOS, Linux and OpenBSD. It currently runs in production on the latter, but I expect it to work anywhere you have a modern Perl.
 
 === Setup for OpenBSD ===
