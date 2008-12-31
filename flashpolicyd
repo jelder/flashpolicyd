@@ -47,7 +47,7 @@ if ($file) {
 }
 
 my $listen = new IO::Socket::INET(
-    Listen => 20,
+    Listen => 100,
     LocalPort => $port,
     Timeout => $timeout,
     Reuse => 1
@@ -77,7 +77,7 @@ while (my @ready = $select->can_read) {
         if ($fh == $listen) {
             $select->add($listen->accept);
         } else {
-            printf("%s:%s -> %s:%s\n",
+            printf("%s:%s -> %s:%s",
                 $fh->peerhost(),
                 $fh->peerport(),
                 $fh->sockhost(),
@@ -87,6 +87,7 @@ while (my @ready = $select->can_read) {
             $fh->print($data);
             $select->remove($fh);
             $fh->close;
+            print "\n" if $debug;
         }
     }
 }
