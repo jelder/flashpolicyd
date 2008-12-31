@@ -47,11 +47,10 @@ if ($file) {
 }
 
 my $listen = new IO::Socket::INET(
-    Listen => 1,
+    Listen => 20,
     LocalPort => $port,
     Timeout => $timeout,
-    ReuseAddr => 1,
-    ReusePort => 1
+    Reuse => 1
 ) or die $!;
 
 # Drop privileges.
