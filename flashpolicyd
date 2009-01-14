@@ -47,7 +47,7 @@ if ($file) {
 }
 
 my $listen = new IO::Socket::INET(
-    Listen => 100,
+    Listen => 2048,
     LocalPort => $port,
     Timeout => $timeout,
     Reuse => 1
