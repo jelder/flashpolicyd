@@ -7,7 +7,7 @@ Serves Flash socket policy requests using a quick select() interface.
 
 If no arguments are specified, a ridiculously permissive policy file is served on port 843.
 
-Working on MacOS, Linux and OpenBSD. It currently runs in production on the latter, but I expect it to work anywhere you have a modern Perl.
+Working on MacOS, Linux and OpenBSD. It currently runs in production on the latter, but I expect it to work anywhere you find a modern Perl.
 
 === Setup for OpenBSD ===
 
