@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Hammer on a Flash policy server
 # Jacob Elder <jacob.elder@gmail.com>
-# Released under the terms of the GPL.
+
 use strict;
 use warnings;
 use IO::Socket::INET;
