@@ -16,6 +16,7 @@ my $port = 843;
 my $timeout = 3;
 my $debug = 0;
 my $pidfile = undef;
+my $daemonize = 1;
 
 sub help () {
     print <<END;
@@ -36,6 +37,7 @@ GetOptions(
     'p|port=s' => \$port,
     'd|debug!' => \$debug,
     'pidfile=s'=> \$pidfile,
+    'daemonize!' => \$daemonize,
 ) or help;
 
 # $data will be from --file or the default after __END__
@@ -67,7 +69,7 @@ my $select = new IO::Select( $listen )
     or die $!;
 
 # Daemonize
-unless ($debug) {
+if ($daemonize and !$debug) {
     exit if fork
 }
 
