@@ -15,6 +15,7 @@ my $file = '';
 my $port = 843;
 my $timeout = 3;
 my $debug = 0;
+my $pidfile = undef;
 
 sub help () {
     print <<END;
@@ -34,6 +35,7 @@ GetOptions(
     'f|file=s' => \$file,
     'p|port=s' => \$port,
     'd|debug!' => \$debug,
+    'pidfile=s'=> \$pidfile,
 ) or help;
 
 # $data will be from --file or the default after __END__
@@ -67,6 +69,13 @@ my $select = new IO::Select( $listen )
 # Daemonize
 unless ($debug) {
     exit if fork
+}
+
+# Write PID
+if ($pidfile) {
+  open PIDFILE, ">$pidfile" or die "$pidfile:$!";
+  print PIDFILE $$;
+  close PIDFILE;
 }
 
 # Adobe's "protocol" says requests are null-terminated. Only <policy-file-request/> has been used so far, so assume that's all we'll ever see.
