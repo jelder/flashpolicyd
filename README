@@ -3,6 +3,8 @@ Serves Flash socket policy requests using a quick select() interface.
     --file      File containing answer to policy requests.
     --port      TCP port, default is 843.
     --timeout   Timeout, default is 3.
+    --daemonize Daemonize, default is 1.
+    --pidfile   Write a PID to this file.
     --debug     Be verbose and don't daemonize.
 
 If no arguments are specified, a ridiculously permissive policy file is served on port 843.
